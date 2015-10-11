@@ -7,11 +7,11 @@ dragon n | n < 0 = ""
 dragon 0         = "Fa"
 dragon n         = extend . dragon . pred $ n
 
-extend (d:ds)
- | d == 'a'  = "aRbFR" ++ extend ds
- | d == 'b'  = "LFaLb" ++ extend ds
- | otherwise = d : extend ds
-extend _     = ""
+extend :: String -> String
+extend = foldr extend' ""
+  where extend' 'a' ex = "aRbFR" ++ ex
+        extend' 'b' ex = "LFaLb" ++ ex
+        extend'  c  ex = c : ex
 
 trace :: Int -> String -> Cursor
 trace n s = go n start s
