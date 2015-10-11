@@ -1,6 +1,53 @@
+{-# LANGUAGE FlexibleInstances #-}
 module Dragon where
 
 import Prelude hiding (Left, Right)
+
+--------------------------------------------------------------------------------
+
+--as the dragon flies:
+--a list of vector displacements by successive dragon variations
+--(dragonFlies !! n) is the vector displacement of (dragon n), corresponding to 2^n steps
+dragonFlies :: [(Integer, Integer)]
+dragonFlies = iterate unfold (0, 1)
+
+unfold :: (Integer, Integer) -> (Integer, Integer)
+unfold r = r `plusV` rotateV r
+
+plusV :: (Integer, Integer) -> (Integer, Integer) -> (Integer, Integer)
+plusV (w, x) (y, z) = (w + y, x + z)
+
+rotateV :: (Integer, Integer) -> (Integer, Integer)
+rotateV (x, y) = (y, negate x)
+
+instance Num (Integer, Integer) where
+  (+) = plusV
+  (*) = undefined
+  negate (x, y) = (0 - x, 0 - y)
+  fromInteger = undefined
+  abs = undefined
+  signum = undefined
+
+--binary representation of 10^12
+--10^12 - (sum $ map (2 ^) [39, 38, 37, 35, 31, 30, 28, 26, 23, 21, 18, 16, 12]) == 0
+--Dragon> binaryExponentSummands (10^12)
+--[12,16,18,21,23,26,28,30,31,35,37,38,39]
+
+--Something interesting:
+--Dragon> let legs = map ((dragonFlies !!) . fromInteger) $ binaryExponentSummands 500
+--Dragon> last legs - (foldr (+) (0, 0) $ init legs)
+--(18,16)
+--Dragon> trace 500 $ dragon 10
+--(18,16,Left)
+
+toBinary :: Integer -> [Integer]
+toBinary n | n < 1 = []
+toBinary n         = n `mod` 2 : toBinary (n `div` 2)
+
+binaryExponentSummands :: Integer -> [Integer]
+binaryExponentSummands = map fst . filter ((== 1) . snd) . zip [0..] . toBinary
+
+--------------------------------------------------------------------------------
 
 dragon :: Integer -> String
 dragon n | n < 0 = ""
