@@ -24,27 +24,29 @@ instance Num (Integer, Integer) where
   (+) = plusV
   (*) = undefined
   negate (x, y) = (0 - x, 0 - y)
-  fromInteger = undefined
+  fromInteger 0 = (0, 0)
+  fromInteger _ = undefined
   abs = undefined
   signum = undefined
 
 --binary representation of 10^12
---10^12 - (sum $ map (2 ^) [39, 38, 37, 35, 31, 30, 28, 26, 23, 21, 18, 16, 12]) == 0
 --Dragon> binaryExponentSummands (10^12)
 --[12,16,18,21,23,26,28,30,31,35,37,38,39]
+--Dragon>10^12 == (sum . map (2 ^) . binaryExponentSummands $ 10^12)
+--True
 
 --Something interesting:
---Dragon> let legs = map ((dragonFlies !!) . fromInteger) $ binaryExponentSummands 500
---Dragon> last legs - (foldr (+) (0, 0) $ init legs)
+--Dragon> let legs = map (dragonFlies !!) $ binaryExponentSummands 500
+--Dragon> last legs - (sum $ init legs)
 --(18,16)
 --Dragon> trace 500 $ dragon 10
 --(18,16,Left)
 
-toBinary :: Integer -> [Integer]
+toBinary :: Int -> [Int]
 toBinary n | n < 1 = []
 toBinary n         = n `mod` 2 : toBinary (n `div` 2)
 
-binaryExponentSummands :: Integer -> [Integer]
+binaryExponentSummands :: Int -> [Int]
 binaryExponentSummands = map fst . filter ((== 1) . snd) . zip [0..] . toBinary
 
 --------------------------------------------------------------------------------
