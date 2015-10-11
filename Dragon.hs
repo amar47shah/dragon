@@ -73,6 +73,7 @@ trace n s = go n start s
         go _  c _          = c
 
 type Cursor = (Integer, Integer, Direction)
+data Direction = Up | Right | Down | Left deriving Show
 
 start :: Cursor
 start = (0, 0, Up)
@@ -98,10 +99,14 @@ rotateR Left = Up
 rotateL :: Direction -> Direction
 rotateL = rotateR . rotateR . rotateR
 
-data Tree = LeafA | LeafB | NodeA Memo Tree Tree | NodeB Memo Tree Tree
-data Direction = Up | Right | Down | Left deriving Show
-data Memo = Memo Integer (Integer, Integer) (Direction -> Direction)
+--------------------------------------------------------------------------------
 
+-- Tree structure of a dragon path
+-- Incomplete: need a combining function to put nodes together
+-- and set memo correctly
+
+data Tree = LeafA | LeafB | NodeA Memo Tree Tree | NodeB Memo Tree Tree
+data Memo = Memo Integer (Integer, Integer) (Direction -> Direction)
 
 steps :: Tree -> Integer
 steps LeafA = 0
